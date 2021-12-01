@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
 import { Game, GameValue, MACHINE_STATE_FAIL } from "../../utils/types";
-import { useControls } from "../../hooks/controls";
+import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 import { game2Play } from "../../utils";
 
@@ -18,7 +18,7 @@ export function SelectGame() {
     games,
     plays,
     setInPlay,
-  } = useControls();
+  } = useGame();
 
   const { navigate } = useNavigation();
 

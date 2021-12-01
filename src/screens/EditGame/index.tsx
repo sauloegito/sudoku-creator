@@ -4,14 +4,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
 import { ControlNumber } from "../../components/ControlNumber";
 import { Sudoku } from "../../components/Sudoku";
-import { useControls } from "../../hooks/controls";
+import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 import AppLoading from "expo-app-loading";
 import { GameValue } from "../../utils/types";
 import { NumberProps } from "../../components/NumberInput";
 
 export function EditGame() {
-  const { inGame, saveGameEdition, handleCellEditClick, isSelected } = useControls();
+  const { inGame, saveGameEdition, handleCellEditClick, isSelected } = useGame();
   const navigation = useNavigation();
 
   function handleDiscartar() {

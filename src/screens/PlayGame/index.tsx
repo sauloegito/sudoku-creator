@@ -3,14 +3,14 @@ import AppLoading from "expo-app-loading";
 import { TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { ControlNumber } from "../../components/ControlNumber";
-import { useControls } from "../../hooks/controls";
+import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 import { Sudoku } from "../../components/Sudoku";
 import { PlayValue } from "../../utils/types";
 import { NumberProps } from "../../components/NumberInput";
 
 export function PlayGame() {
-  const { inPlay, isOptions, setIsOptions, restartGame, handleCellPlayClick, isSelected } = useControls();
+  const { inPlay, isOptions, setIsOptions, restartGame, handleCellPlayClick, isSelected } = useGame();
 
   const questionIcon: React.ComponentProps<typeof AntDesign>["name"] = isOptions
     ? "questioncircleo"

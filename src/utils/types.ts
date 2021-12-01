@@ -52,13 +52,3 @@ export const LevelOptions: LevelInfo[] = [
   { id: "HARD", label: "Difícil", numbers: NineNumbers },
   { id: "EXTREME", label: "Muito Difícil", numbers: NineNumbers },
 ];
-
-export interface AbstractContextData {
-  isSelected: (cell: Position | null) => boolean;
-  selectedCell: Position | null;
-  handleCellClick: (cell: Position | null) => void;
-};
-
-export interface ContextProviderProps {
-  children: React.ReactNode;
-};

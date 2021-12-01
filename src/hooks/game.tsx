@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { cell2Flat, game2Play, sameCell, validite } from "../utils";
 import {
-  ContextProviderProps,
   Game,
   GameValue,
   LevelInfo,
@@ -16,7 +15,7 @@ import {
 const GAMES_STORAGE = "@sudoku_creator:games";
 const PLAYS_STORAGE = "@sudoku_creator:plays";
 
-interface ControlsContextData {
+interface GameContextData {
   selectedLevel: LevelInfo;
   hasNextLevel: boolean;
   hasPriorLevel: boolean;
@@ -45,9 +44,12 @@ interface ControlsContextData {
   handleCellPlayClick: (cell: Position | null) => void;
 }
 
-export const ControlsContext = createContext({} as ControlsContextData);
+export const GameContext = createContext({} as GameContextData);
+interface ContextProviderProps {
+  children: React.ReactNode;
+};
 
-function ControlsProvider({ children }: ContextProviderProps) {
+function GameProvider({ children }: ContextProviderProps) {
   const [isOptions, setIsOptions] = useState(false);
   const [selectedLevelIndex, setSelectedLevelIndex] = useState(2);
   const [selectedLevel, setSelectedLevel] = useState(
@@ -280,7 +282,7 @@ function ControlsProvider({ children }: ContextProviderProps) {
   }
 
   return (
-    <ControlsContext.Provider
+    <GameContext.Provider
       value={{
         selectedLevel,
         hasNextLevel: hasNextLevel(),
@@ -310,12 +312,12 @@ function ControlsProvider({ children }: ContextProviderProps) {
       }}
     >
       {children}
-    </ControlsContext.Provider>
+    </GameContext.Provider>
   );
 }
 
-function useControls() {
-  return useContext(ControlsContext);
+function useGame() {
+  return useContext(GameContext);
 }
 
-export { ControlsProvider, useControls };
+export { GameProvider, useGame };
