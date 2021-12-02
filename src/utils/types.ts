@@ -15,6 +15,10 @@ export type SavedPlays = {
   [level in GameLevel]: Play | null;
 };
 
+export type SavedGames = {
+  [level in GameLevel]: Game[];
+};
+
 export interface Position {
   col: number;
   row: number;
@@ -48,7 +52,7 @@ const NineNumbers: number[] = Array.from(Array(9), (e, i) => i + 1);
 export const LevelOptions: LevelInfo[] = [
   { id: "BEGINNER", label: "Iniciante", numbers: SixNumbers },
   { id: "EASY", label: "Fácil", numbers: NineNumbers },
-  { id: "REGULAR", label: "Comum", numbers: NineNumbers },
+  { id: "REGULAR", label: "Clássico", numbers: NineNumbers },
   { id: "HARD", label: "Difícil", numbers: NineNumbers },
   { id: "EXTREME", label: "Muito Difícil", numbers: NineNumbers },
 ];

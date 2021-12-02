@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, VoidFunctionComponent } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { cell2Flat, game2Play, sameCell, validite } from "../utils";
 import {
@@ -9,18 +9,16 @@ import {
   MACHINE_STATE_FAIL,
   Play,
   Position,
+  SavedGames,
   SavedPlays,
 } from "../utils/types";
 
-const GAMES_STORAGE = "@sudoku_creator:games";
-const PLAYS_STORAGE = "@sudoku_creator:plays";
+const GAMES_STORAGE = "@sudoku-creator:games";
+const PLAYS_STORAGE = "@sudoku-creator:plays";
 
 interface GameContextData {
   selectedLevel: LevelInfo;
-  hasNextLevel: boolean;
-  hasPriorLevel: boolean;
-  setNextLevel: () => boolean;
-  setPriorLevel: () => boolean;
+  setSelectedLevel: (newLevel: LevelInfo) => void;
 
   isOptions: boolean;
   setIsOptions: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,8 +27,7 @@ interface GameContextData {
 
   isSelected: (cell: Position | null) => boolean;
 
-  games: Game[];
-
+  games: SavedGames;
   inGame: Game | null;
   setInGame: (newGame: Game) => void;
   saveGameEdition: () => void;
@@ -41,6 +38,7 @@ interface GameContextData {
   setInPlay: (play: Play) => void;
   restartGame: () => void;
   saveUndonePlay: () => void;
+  saveFinishedPlay: () => void;
   handleCellPlayClick: (cell: Position | null) => void;
 }
 
@@ -50,16 +48,24 @@ interface ContextProviderProps {
 };
 
 function GameProvider({ children }: ContextProviderProps) {
+
+  let _selectedLevelIndex: number | undefined = 2;
+
   const [isOptions, setIsOptions] = useState(false);
-  const [selectedLevelIndex, setSelectedLevelIndex] = useState(2);
   const [selectedLevel, setSelectedLevel] = useState(
-    LevelOptions[selectedLevelIndex]
+    LevelOptions[_selectedLevelIndex]
   );
 
   // const [selectedType, _setSelectedType] = useState<GameType>("DEFAULT");
   const [selectedNumber, setSelectedNumber] = useState(0);
 
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<SavedGames>({
+    "BEGINNER": [],
+    "EASY": [],
+    "REGULAR": [],
+    "HARD": [],
+    "EXTREME": [],
+  });
   const [inGame, setInGame] = useState<Game | null>(null);
 
   const [plays, setPlays] = useState<SavedPlays>({
@@ -73,32 +79,6 @@ function GameProvider({ children }: ContextProviderProps) {
 
   const [selectedCell, setSelectedCell] = useState<Position | null>(null);
 
-  function hasNextLevel(): boolean {
-    return selectedLevelIndex < LevelOptions.length - 1;
-  }
-
-  function setNextLevel(): boolean {
-    if (hasNextLevel()) {
-      setSelectedLevelIndex((previous) => previous + 1);
-      setSelectedLevel(LevelOptions[selectedLevelIndex]);
-      return true;
-    }
-    return false;
-  }
-
-  function hasPriorLevel(): boolean {
-    return selectedLevelIndex > 0;
-  }
-
-  function setPriorLevel(): boolean {
-    if (hasPriorLevel()) {
-      setSelectedLevelIndex((previous) => previous - 1);
-      setSelectedLevel(LevelOptions[selectedLevelIndex]);
-      return true;
-    }
-    return false;
-  }
-
   useEffect(() => {
     async function loadStorageGames() {
       const storagedGames = await AsyncStorage.getItem(
@@ -108,14 +88,19 @@ function GameProvider({ children }: ContextProviderProps) {
         }
       );
 
-      if (storagedGames) {
-        const games: Game[] = JSON.parse(storagedGames);
+      if (storagedGames && storagedGames !== "[]") {
+        const games: SavedGames = JSON.parse(storagedGames);
+        // console.log("getItem output", GAMES_STORAGE, storagedGames, games);
         refreshGameList(games);
       }
     }
 
     async function loadStoragePlays() {
-      const storagedPlays = await AsyncStorage.getItem(PLAYS_STORAGE);
+      const storagedPlays = await AsyncStorage.getItem(PLAYS_STORAGE,
+        (fail, result) => {
+          console.log("getItem", PLAYS_STORAGE, fail, result);
+        }
+      );
 
       if (storagedPlays) {
         const plays: SavedPlays = JSON.parse(storagedPlays);
@@ -146,29 +131,20 @@ function GameProvider({ children }: ContextProviderProps) {
     setInPlay(null);
   }
 
-  function refreshGameList(gameList: Game[]) {
-    setGames(gameList);
-    refreshLevelCounter();
+  function saveFinishedPlay() {
+    const tempPlays: SavedPlays = {...plays};
+    tempPlays[selectedLevel.id] = null;
+    refreshPlaysList(tempPlays);
+    setInPlay(null);
+  }
+
+  function refreshGameList(games: SavedGames) {
+    setGames(games);
     saveStorageGames();
-  }
-
-  function refreshLevelCounter() {
-    LevelOptions.forEach((info) => {
-      info.count = games
-        .filter((g) => g.levelOption.id === info.id)
-        .reduce((total, _item) => total + 1, 0);
-    });
-  }
-
-  function refreshLevelPlayer() {
-    LevelOptions.forEach((info) => {
-      info.hasSaved = Boolean(plays[info.id]);
-    });
   }
 
   function refreshPlaysList(plays: SavedPlays) {
     setPlays(plays);
-    refreshLevelPlayer();
     saveStoragePlays();
   }
 
@@ -250,8 +226,10 @@ function GameProvider({ children }: ContextProviderProps) {
     if (!inGame) {
       throw MACHINE_STATE_FAIL;
     }
-    const mapa: Array<Array<number>> = Array.from({ length: 9 }, () =>
-      new Array(9).fill(0)
+    const level = inGame.levelOption.id;
+    const size = inGame.levelOption.numbers.length;
+    const mapa: Array<Array<number>> = Array.from({ length: size }, () =>
+      new Array(size).fill(0)
     );
 
     inGame.initialValues.forEach((item) => {
@@ -273,8 +251,8 @@ function GameProvider({ children }: ContextProviderProps) {
       throw "Alguma coisa errada não está certa!";
     }
 
-    const tempGames = [...games];
-    const len = tempGames.push(inGame);
+    const tempGames = {...games};
+    const len = tempGames[level].push(inGame);
     console.log("saved at", len);
 
     refreshGameList(tempGames);
@@ -285,10 +263,7 @@ function GameProvider({ children }: ContextProviderProps) {
     <GameContext.Provider
       value={{
         selectedLevel,
-        hasNextLevel: hasNextLevel(),
-        hasPriorLevel: hasPriorLevel(),
-        setNextLevel,
-        setPriorLevel,
+        setSelectedLevel,
 
         isOptions,
         setIsOptions,
@@ -308,6 +283,7 @@ function GameProvider({ children }: ContextProviderProps) {
         setInPlay,
         restartGame,
         saveUndonePlay,
+        saveFinishedPlay,
         handleCellPlayClick,
       }}
     >

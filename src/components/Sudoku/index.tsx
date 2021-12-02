@@ -46,7 +46,7 @@ export function Sudoku(props: SudokuProps) {
       <FlatList
         data={props.flatValues}
         numColumns={props.numbersSize}
-        keyExtractor={(item) => `[${item.col}, ${item.row}]`}
+        keyExtractor={(item) => `grid-${item.col}-${item.row}`}
         renderItem={({ item }) => (
           <View style={styles.item}>
             <TouchableOpacity

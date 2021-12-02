@@ -5,6 +5,11 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    alignItems:'flex-start'
+  },
+  btnBack: {
+    marginTop: 40,
+    marginBottom: -20,
   },
   allControls: {
     width: "100%",
