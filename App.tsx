@@ -7,7 +7,7 @@ import {
 } from "@expo-google-fonts/roboto";
 import { StatusBar } from "expo-status-bar";
 import Routes from "./src/routes";
-import { ControlsProvider } from "./src/hooks/controls";
+import { GameProvider } from "./src/hooks/game";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,9 +20,9 @@ export default function App() {
   }
 
   return (
-    <ControlsProvider>
+    <GameProvider>
       <StatusBar style="light" translucent backgroundColor="transparent" />
       <Routes />
-    </ControlsProvider>
+    </GameProvider>
   );
 }

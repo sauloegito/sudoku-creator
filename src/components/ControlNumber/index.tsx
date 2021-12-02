@@ -1,10 +1,10 @@
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useControls } from "../../hooks/controls";
+import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 
 export function ControlNumber() {
-  const { selectedLevel, selectedNumber, setSelectedNumber } = useControls();
+  const { selectedLevel, selectedNumber, setSelectedNumber } = useGame();
 
   function selectedItem(num: number): boolean {
     return num === selectedNumber;

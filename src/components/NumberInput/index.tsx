@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList, Text, View } from "react-native";
-import { useControls } from "../../hooks/controls";
+import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 
 export interface NumberProps {
@@ -8,18 +8,18 @@ export interface NumberProps {
   possibles: number[];
   readonly: boolean;
   selected: boolean;
-};
+}
 
 type Props = {
   data: NumberProps;
 };
 
 export function NumberInput({ data }: Props) {
-  const { inGame } = useControls();
+  const { inGame } = useGame();
 
   return (
     <View style={styles.container}>
-      {(data.value || !data.possibles.length) ? (
+      {data.value || !data.possibles.length ? (
         <Text style={styles.textValue}>{data.value}</Text>
       ) : (
         <FlatList
