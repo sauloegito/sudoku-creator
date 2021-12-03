@@ -15,7 +15,7 @@ export function ControlNumber() {
       <FlatList
         data={selectedLevel.numbers}
         numColumns={Math.ceil(selectedLevel.numbers.length / 2)}
-        keyExtractor={(item) => item.toString()}
+        keyExtractor={(item) => `num-${item}`}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}

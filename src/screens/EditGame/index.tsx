@@ -33,15 +33,18 @@ export function EditGame() {
   return (
     <View style={styles.container}>
       <Sudoku
-        numbersSize={inGame.levelOption.numbers.length}
+        numbers={inGame.levelOption.numbers}
         flatValues={inGame.initialValues}
         handleCellClick={handleCellEditClick}
         numberPropGame={(item: GameValue) => {
           const prop: NumberProps = {
+            col: item.col,
+            row: item.row,
             value: item.value,
             possibles: [],
             readonly: false,
             selected: isSelected(item),
+            valid: item.valid,
           };
           return prop;
         }}

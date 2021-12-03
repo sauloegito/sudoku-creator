@@ -1,4 +1,14 @@
-import { Position, GameValue, PlayValue, Game, Play } from "./types";
+import { LogBox } from "react-native";
+import {
+  LEVELS,
+  Position,
+  GameValue,
+  PlayValue,
+  Game,
+  Play,
+  SavedGames,
+  SavedPlays,
+} from "./types";
 
 export function sameCell(
   cellA: Position | null,
@@ -9,6 +19,62 @@ export function sameCell(
   } else {
     return false;
   }
+}
+
+export function stringifyGames(saved: SavedGames): string {
+  function stringifyGame(game: Game | null, index: number): string {
+    if (!game) {
+      return "[]; ";
+    }
+    return (
+      `\n[${index}]=\n` +
+      stringifySudoku(game.initialValues, game.levelOption.numbers.length)
+    );
+  }
+
+  return LEVELS.reduce(
+    (txtLevel, level) =>
+      txtLevel +
+      "*** " +
+      level +
+      ": " +
+      saved[level].reduce(
+        (txtGame, game, index) => txtGame + stringifyGame(game, index),
+        ""
+      ),
+    ""
+  );
+}
+
+export function stringifyPlays(saved: SavedPlays): string {
+  function stringifyPlay(play: Play | null): string {
+    if (!play) {
+      return "null; ";
+    }
+    return (
+      "\n" + stringifySudoku(play.values, play.game.levelOption.numbers.length)
+    );
+  }
+
+  return LEVELS.reduce(
+    (txtLevel, level) =>
+      txtLevel + "*** " + level + ": " + stringifyPlay(saved[level]),
+    ""
+  );
+}
+
+export function stringifySudoku(values: GameValue[], size: number): string {
+  const mapa: Array<Array<number>> = Array.from({ length: size }, () =>
+    new Array(size).fill(0)
+  );
+
+  values.forEach((item) => {
+    if (item.value) {
+      mapa[item.row][item.col] = item.value;
+    }
+  });
+
+  return mapa.reduce((grupo, item) => grupo + JSON.stringify(item) + "\n", "");
 }
 
 export function game2Play(game: Game): Play {
@@ -126,7 +192,12 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
       //   console.log("analise validateArea", area, cell2Log(cell), numbers2Log(validNumbers));
       // }
       if (!validateCell(cell, validNumbers)) {
-        console.log("validateArea", area, cell2Log(cell), numbers2Log(validNumbers));
+        console.log(
+          "validateArea",
+          area,
+          cell2Log(cell),
+          numbers2Log(validNumbers)
+        );
         validArea = false;
       }
     }

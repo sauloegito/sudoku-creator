@@ -1,6 +1,19 @@
-import React, { createContext, useContext, useEffect, useState, VoidFunctionComponent } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { cell2Flat, game2Play, sameCell, validite } from "../utils";
+import {
+  cell2Flat,
+  game2Play,
+  sameCell,
+  stringifyGames,
+  stringifyPlays,
+  stringifySudoku,
+  validite,
+} from "../utils";
 import {
   Game,
   GameValue,
@@ -45,10 +58,9 @@ interface GameContextData {
 export const GameContext = createContext({} as GameContextData);
 interface ContextProviderProps {
   children: React.ReactNode;
-};
+}
 
 function GameProvider({ children }: ContextProviderProps) {
-
   let _selectedLevelIndex: number | undefined = 2;
 
   const [isOptions, setIsOptions] = useState(false);
@@ -60,52 +72,58 @@ function GameProvider({ children }: ContextProviderProps) {
   const [selectedNumber, setSelectedNumber] = useState(0);
 
   const [games, setGames] = useState<SavedGames>({
-    "BEGINNER": [],
-    "EASY": [],
-    "REGULAR": [],
-    "HARD": [],
-    "EXTREME": [],
+    BEGINNER: [],
+    EASY: [],
+    REGULAR: [],
+    HARD: [],
+    EXTREME: [],
   });
   const [inGame, setInGame] = useState<Game | null>(null);
 
   const [plays, setPlays] = useState<SavedPlays>({
-    "BEGINNER": null,
-    "EASY": null,
-    "REGULAR": null,
-    "HARD": null,
-    "EXTREME": null,
+    BEGINNER: null,
+    EASY: null,
+    REGULAR: null,
+    HARD: null,
+    EXTREME: null,
   });
   const [inPlay, setInPlay] = useState<Play | null>(null);
 
   const [selectedCell, setSelectedCell] = useState<Position | null>(null);
 
   useEffect(() => {
-    async function loadStorageGames() {
-      const storagedGames = await AsyncStorage.getItem(
-        GAMES_STORAGE,
-        (fail, result) => {
-          console.log("getItem", GAMES_STORAGE, fail, result);
+    function loadStorageGames() {
+      AsyncStorage.getItem(GAMES_STORAGE, (fail, result) => {
+        if (fail) {
+          console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
+        } else if (result && result !== "[]") {
+          const games: SavedGames = JSON.parse(result);
+          console.log(
+            "*** getItem",
+            GAMES_STORAGE,
+            "sucesso",
+            stringifyGames(games)
+          );
+          refreshGameList(games);
         }
-      );
-
-      if (storagedGames && storagedGames !== "[]") {
-        const games: SavedGames = JSON.parse(storagedGames);
-        // console.log("getItem output", GAMES_STORAGE, storagedGames, games);
-        refreshGameList(games);
-      }
+      });
     }
 
-    async function loadStoragePlays() {
-      const storagedPlays = await AsyncStorage.getItem(PLAYS_STORAGE,
-        (fail, result) => {
-          console.log("getItem", PLAYS_STORAGE, fail, result);
+    function loadStoragePlays() {
+      AsyncStorage.getItem(PLAYS_STORAGE, (fail, result) => {
+        if (fail) {
+          console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
+        } else if (result) {
+          const plays: SavedPlays = JSON.parse(result);
+          console.log(
+            "*** getItem",
+            GAMES_STORAGE,
+            "sucesso",
+            stringifyPlays(plays)
+          );
+          refreshPlaysList(plays);
         }
-      );
-
-      if (storagedPlays) {
-        const plays: SavedPlays = JSON.parse(storagedPlays);
-        refreshPlaysList(plays);
-      }
+      });
     }
 
     loadStoragePlays();
@@ -125,14 +143,14 @@ function GameProvider({ children }: ContextProviderProps) {
   }
 
   function saveUndonePlay() {
-    const tempPlays: SavedPlays = {...plays};
+    const tempPlays: SavedPlays = { ...plays };
     tempPlays[selectedLevel.id] = inPlay;
     refreshPlaysList(tempPlays);
     setInPlay(null);
   }
 
   function saveFinishedPlay() {
-    const tempPlays: SavedPlays = {...plays};
+    const tempPlays: SavedPlays = { ...plays };
     tempPlays[selectedLevel.id] = null;
     refreshPlaysList(tempPlays);
     setInPlay(null);
@@ -192,6 +210,9 @@ function GameProvider({ children }: ContextProviderProps) {
 
   function handleCellPlayClick(cell: Position | null): void {
     if (cell?.readonly || isSelected(cell)) {
+      if (cell) {
+        console.log(`cell clicked:${cell.col}-${cell.row} is readonly?`, cell.readonly);
+      }
       setSelectedCell(null);
       return;
     }
@@ -209,6 +230,7 @@ function GameProvider({ children }: ContextProviderProps) {
     if (!isOptions) {
       markValue(selectedValue);
     } else {
+      console.log(`before click:${cell.col}-${cell.row}`, JSON.stringify(selectedValue.possibles));
       const idx = selectedValue.possibles.indexOf(selectedNumber);
       if (idx == -1) {
         selectedValue.possibles.push(selectedNumber);
@@ -217,6 +239,7 @@ function GameProvider({ children }: ContextProviderProps) {
           (p) => p != selectedNumber
         );
       }
+      console.log(`after click:${cell.col}-${cell.row}`, JSON.stringify(selectedValue.possibles));
     }
 
     setInPlay({ game: inPlay.game, values });
@@ -228,30 +251,13 @@ function GameProvider({ children }: ContextProviderProps) {
     }
     const level = inGame.levelOption.id;
     const size = inGame.levelOption.numbers.length;
-    const mapa: Array<Array<number>> = Array.from({ length: size }, () =>
-      new Array(size).fill(0)
-    );
-
-    inGame.initialValues.forEach((item) => {
-      if (item.value) {
-        mapa[item.col][item.row] = item.value;
-      }
-    });
-
-    let textos: string[] = [];
-    textos = mapa.reduce((grupo, item) => {
-      for (let row = 0; row < item.length; row++) {
-        grupo[row] = (grupo[row] ? grupo[row] : "") + item[row];
-      }
-      return grupo;
-    }, textos);
-    console.log("saving", textos);
+    stringifySudoku(inGame.initialValues, size);
 
     if (!validite(inGame.initialValues, inGame.levelOption.numbers)) {
       throw "Alguma coisa errada não está certa!";
     }
 
-    const tempGames = {...games};
+    const tempGames = { ...games };
     const len = tempGames[level].push(inGame);
     console.log("saved at", len);
 

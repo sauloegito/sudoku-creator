@@ -1,38 +1,45 @@
 import React from "react";
 import { FlatList, Text, View } from "react-native";
-import { useGame } from "../../hooks/game";
+import { Position } from "../../utils/types";
 import { styles } from "./styles";
 
-export interface NumberProps {
+export interface NumberProps extends Position {
   value?: number;
   possibles: number[];
-  readonly: boolean;
   selected: boolean;
 }
 
 type Props = {
   data: NumberProps;
+  numbers: number[];
 };
 
-export function NumberInput({ data }: Props) {
-  const { inGame } = useGame();
+export function NumberInput({ data, numbers }: Props) {
+  function showValue(): boolean {
+    return Boolean(data.value) || !data.possibles.length;
+  }
 
   return (
     <View style={styles.container}>
-      {data.value || !data.possibles.length ? (
-        <Text style={styles.textValue}>{data.value}</Text>
+      {showValue() ? (
+        <Text style={[styles.textValue, data.readonly && styles.textReadonly]}>
+          {data.value}
+        </Text>
       ) : (
-        <FlatList
-          data={inGame?.levelOption.numbers}
-          keyExtractor={(item) => item.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.itemPossible}>
-              <Text style={styles.textPossible}>
-                {data.possibles.indexOf(item) === -1 ? "" : item}
-              </Text>
-            </View>
-          )}
-        />
+        <View style={styles.viewPossible}>
+          <FlatList
+            data={numbers}
+            keyExtractor={(item) => `possib-${data.col}${data.row}-${item}`}
+            renderItem={({ item }) => (
+              <View style={styles.itemPossible}>
+                <Text style={styles.textPossible}>
+                  {item} 
+                  {/* {data.possibles.indexOf(item) === -1 ? "" : item} */}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
       )}
     </View>
   );

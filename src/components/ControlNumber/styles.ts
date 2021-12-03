@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     color: COLORS.GRAY_PRIMARY,
   },
   text: {
-    fontSize: 20,
+    fontSize: 25,
     fontFamily: FONTS.REGULAR,
     padding: 10,
   },

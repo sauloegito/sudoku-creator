@@ -5,7 +5,7 @@ import { NumberInput, NumberProps } from "../NumberInput";
 import { styles } from "./styles";
 
 export interface SudokuProps {
-  numbersSize: number;
+  numbers: number[];
   flatValues: GameValue[] | PlayValue[];
   handleCellClick: (cell: Position | null) => void;
 
@@ -24,11 +24,11 @@ export function Sudoku(props: SudokuProps) {
   }
 
   function isEndNone(col: number): boolean {
-    return col + 1 === props.numbersSize;
+    return col + 1 === props.numbers.length;
   }
 
   function isBottomNone(row: number): boolean {
-    return row + 1 === props.numbersSize;
+    return row + 1 === props.numbers.length;
   }
 
   function numberProps(item: any): NumberProps {
@@ -45,8 +45,8 @@ export function Sudoku(props: SudokuProps) {
     <View style={styles.container}>
       <FlatList
         data={props.flatValues}
-        numColumns={props.numbersSize}
-        keyExtractor={(item) => `grid-${item.col}-${item.row}`}
+        numColumns={props.numbers.length}
+        keyExtractor={(item) => `cell-${item.col}${item.row}`}
         renderItem={({ item }) => (
           <View style={styles.item}>
             <TouchableOpacity
@@ -59,7 +59,7 @@ export function Sudoku(props: SudokuProps) {
                 isBottomNone(item.row) && styles.bottomNone,
               ]}
             >
-              <NumberInput data={numberProps(item)} />
+              <NumberInput data={numberProps(item)} numbers={props.numbers} />
             </TouchableOpacity>
           </View>
         )}

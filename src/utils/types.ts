@@ -1,6 +1,7 @@
 export const MACHINE_STATE_FAIL = "Máquina de estados incoerente";
 
-export type GameLevel = "BEGINNER" | "EASY" | "REGULAR" | "HARD" | "EXTREME";
+export const LEVELS = ["BEGINNER", "EASY", "REGULAR", "HARD", "EXTREME"] as const;
+export type GameLevel = typeof LEVELS[number];
 export type GameType = "DEFAULT" | "KILLER";
 
 export type LevelInfo = {

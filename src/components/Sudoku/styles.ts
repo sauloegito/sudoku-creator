@@ -5,16 +5,15 @@ export const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     backgroundColor: COLORS.GREEN,
-    width: "100%",
-    marginLeft: 5,
-    marginRight: 12,
+    width: "96%",
+    marginLeft: 8,
     marginTop: 40,
   },
   item: {
     alignItems: "center",
     flexGrow: 1,
     flexBasis: 0,
-    margin: 3,
+    margin: 2,
   },
   grid: {
     borderEndColor: COLORS.ORANGE,

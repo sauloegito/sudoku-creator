@@ -57,15 +57,18 @@ export function PlayGame() {
         <AntDesign name="leftcircleo" size={28} style={styles.icon} />
       </TouchableOpacity>
       <Sudoku
-        numbersSize={inPlay.game.levelOption.numbers.length}
+        numbers={inPlay.game.levelOption.numbers}
         flatValues={inPlay.values}
         handleCellClick={handleCellPlayClick}
         numberPropPlay={(item: PlayValue) => {
           const prop: NumberProps = {
+            col: item.col,
+            row: item.row,
             value: item.value,
             possibles: item.possibles,
             readonly: item.readonly,
             selected: isSelected(item),
+            valid: item.valid,
           };
           return prop;
         }}
