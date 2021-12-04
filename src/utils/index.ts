@@ -22,26 +22,22 @@ export function sameCell(
 }
 
 export function stringifyGames(saved: SavedGames): string {
-  function stringifyGame(game: Game | null, index: number): string {
-    if (!game) {
+  function stringifyGame(games: Game[]): string {
+    if (!games.length) {
       return "[]; ";
     }
-    return (
-      `\n[${index}]=\n` +
-      stringifySudoku(game.initialValues, game.levelOption.numbers.length)
+    return games.reduce(
+      (txtGame, game, index) =>
+        txtGame +
+        `\n[${index}]=\n` +
+        stringifySudoku(game.initialValues, game.levelOption.numbers.length),
+      ""
     );
   }
 
   return LEVELS.reduce(
     (txtLevel, level) =>
-      txtLevel +
-      "*** " +
-      level +
-      ": " +
-      saved[level].reduce(
-        (txtGame, game, index) => txtGame + stringifyGame(game, index),
-        ""
-      ),
+      txtLevel + "*** " + level + ": " + stringifyGame(saved[level]),
     ""
   );
 }

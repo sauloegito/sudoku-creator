@@ -29,13 +29,15 @@ export function NumberInput({ data, numbers }: Props) {
         <View style={styles.viewPossible}>
           <FlatList
             data={numbers}
+            numColumns={3}
             keyExtractor={(item) => `possib-${data.col}${data.row}-${item}`}
             renderItem={({ item }) => (
               <View style={styles.itemPossible}>
-                <Text style={styles.textPossible}>
-                  {item} 
-                  {/* {data.possibles.indexOf(item) === -1 ? "" : item} */}
-                </Text>
+                <View style={styles.cellPossible}>
+                  <Text style={styles.textPossible}>
+                    {data.possibles.indexOf(item) === -1 ? "" : item}
+                  </Text>
+                </View>
               </View>
             )}
           />

@@ -104,7 +104,7 @@ function GameProvider({ children }: ContextProviderProps) {
             "sucesso",
             stringifyGames(games)
           );
-          refreshGameList(games);
+          setGames(games);
         }
       });
     }
@@ -121,7 +121,7 @@ function GameProvider({ children }: ContextProviderProps) {
             "sucesso",
             stringifyPlays(plays)
           );
-          refreshPlaysList(plays);
+          setPlays(plays);
         }
       });
     }
