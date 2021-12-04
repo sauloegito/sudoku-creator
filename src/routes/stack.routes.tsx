@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { COLORS } from '../theme';
-import { SelectGame } from '../screens/SelectGame';
-import { EditGame } from '../screens/EditGame';
-import { PlayGame } from '../screens/PlayGame';
+import SelectGame from '../screens/SelectGame';
+import EditGame from '../screens/EditGame';
+import PlayGame from '../screens/PlayGame';
 
 const stackRoutes = createStackNavigator();
 

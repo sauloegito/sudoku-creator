@@ -6,7 +6,7 @@ import { styles } from "./styles";
 export interface NumberProps extends Position {
   value?: number;
   possibles: number[];
-  selected: boolean;
+  selected?: boolean;
 }
 
 type Props = {
@@ -30,6 +30,7 @@ export function NumberInput({ data, numbers }: Props) {
           <FlatList
             data={numbers}
             numColumns={3}
+            listKey="possibles"
             keyExtractor={(item) => `possib-${data.col}${data.row}-${item}`}
             renderItem={({ item }) => (
               <View style={styles.itemPossible}>

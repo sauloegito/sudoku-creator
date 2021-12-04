@@ -1,8 +1,13 @@
-import { COLORS } from '../../theme/colors';
+import { COLORS, FONTS } from '../../theme';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    width: "100%",
+    alignItems:'flex-start'
+  },
+  gridContainer: {
     justifyContent: 'center',
     backgroundColor: COLORS.GREEN,
     width: "96%",
@@ -34,5 +39,26 @@ export const styles = StyleSheet.create({
   },
   bottomNone: {
     borderBottomWidth: 0,
-  }
+  },
+  allControls: {
+    width: "100%",
+    flexDirection: "column",
+    marginBottom: 40,
+  },
+  gameControls: {
+    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: 'space-evenly',
+    fontSize: 16,
+    fontFamily: FONTS.REGULAR,
+    color: COLORS.WHITE,
+  },
+  icon: {
+    color: COLORS.WHITE,
+  },
+  btnControl: {
+    alignItems: "center",
+    margin: 10,
+  },
+
 });

@@ -2,6 +2,9 @@ import { FONTS, COLORS } from "../../theme";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  container: {
+    paddingTop: 20,
+  },
   item: {
     alignItems: "center",
     flexGrow: 1,
@@ -16,7 +19,7 @@ export const styles = StyleSheet.create({
     color: COLORS.GRAY_PRIMARY,
   },
   text: {
-    fontSize: 25,
+    fontSize: 28,
     fontFamily: FONTS.REGULAR,
     padding: 10,
   },

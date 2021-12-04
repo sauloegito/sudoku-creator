@@ -7,20 +7,19 @@ import {
   GameValue,
   LevelOptions,
   MACHINE_STATE_FAIL,
+  Play,
 } from "../../utils/types";
 import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 import { game2Play } from "../../utils";
 import { Picker } from "react-native";
 
-export function SelectGame() {
+const SelectGame: React.FC = () => {
   const {
     selectedLevel,
     setSelectedLevel,
-    setInGame,
     games,
     plays,
-    setInPlay,
   } = useGame();
 
   const { navigate } = useNavigation();
@@ -32,16 +31,15 @@ export function SelectGame() {
   }
 
   function handlePlayGame(saved: boolean) {
-    async function loadLastGame() {
+    function loadLastGame(): Play {
       const saved = plays[selectedLevel.id];
-      if (saved) {
-        setInPlay(saved);
-      } else {
+      if (!saved) {
         throw MACHINE_STATE_FAIL;
       }
+      return saved;
     }
 
-    function playNewGame(): void {
+    function playNewGame(): Play {
       const availableGames = games[selectedLevel.id];
       const max = availableGames.length;
       if (max === 0) {
@@ -49,15 +47,10 @@ export function SelectGame() {
       }
       const rndIndex = Math.floor(Math.random() * max);
       const selectedGame = availableGames[rndIndex];
-      setInPlay(game2Play(selectedGame));
+      return game2Play(selectedGame);
     }
 
-    if (saved) {
-      loadLastGame();
-    } else {
-      playNewGame();
-    }
-    navigate("Play");
+    navigate("Play", {play: (saved) ? loadLastGame() : playNewGame()});
   }
 
   function handleEditGame() {
@@ -79,8 +72,7 @@ export function SelectGame() {
       };
     }
 
-    setInGame(editNewGame());
-    navigate("Edit");
+    navigate("Edit", {game: editNewGame()});
   }
 
   return (
@@ -119,3 +111,5 @@ export function SelectGame() {
     </View>
   );
 }
+
+export default SelectGame;

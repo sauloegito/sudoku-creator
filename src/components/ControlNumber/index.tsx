@@ -1,25 +1,29 @@
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useGame } from "../../hooks/game";
 import { styles } from "./styles";
 
-export function ControlNumber() {
-  const { selectedLevel, selectedNumber, setSelectedNumber } = useGame();
+interface ControlNumberProps {
+  numbers: number[];
+  selected: number;
+  onChange: (number: number) => void;
+}
+export function ControlNumber(props: ControlNumberProps) {
 
   function selectedItem(num: number): boolean {
-    return num === selectedNumber;
+    return num === props.selected;
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
-        data={selectedLevel.numbers}
-        numColumns={Math.ceil(selectedLevel.numbers.length / 2)}
+        data={props.numbers}
+        numColumns={Math.ceil(props.numbers.length / 2)}
+        listKey="selecao-numeros"
         keyExtractor={(item) => `num-${item}`}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
-            onPress={() => setSelectedNumber(selectedItem(item) ? 0 : item)}
+            onPress={() => props.onChange(selectedItem(item) ? 0 : item)}
           >
             <Text
               style={[

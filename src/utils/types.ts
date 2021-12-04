@@ -1,3 +1,6 @@
+import { AntDesign } from '@expo/vector-icons';
+import { GestureResponderEvent } from "react-native";
+
 export const MACHINE_STATE_FAIL = "Máquina de estados incoerente";
 
 export const LEVELS = ["BEGINNER", "EASY", "REGULAR", "HARD", "EXTREME"] as const;
@@ -47,8 +50,16 @@ export type Play = {
   values: PlayValue[];
 };
 
-const SixNumbers: number[] = Array.from(Array(6), (e, i) => i + 1);
-const NineNumbers: number[] = Array.from(Array(9), (e, i) => i + 1);
+export type ButtonControl = {
+  antName: React.ComponentProps<typeof AntDesign>['name'];
+  action: (event: GestureResponderEvent) => void;
+}
+
+function mountArrayNumbers(size: number): number[] {
+  return Array.from(Array(size), (_, i) => i + 1);;
+}
+const SixNumbers = mountArrayNumbers(6);
+const NineNumbers = mountArrayNumbers(9);
 
 export const LevelOptions: LevelInfo[] = [
   { id: "BEGINNER", label: "Iniciante", numbers: SixNumbers },

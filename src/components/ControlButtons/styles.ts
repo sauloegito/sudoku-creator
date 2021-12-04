@@ -1,17 +1,9 @@
-import { StyleSheet } from "react-native";
-import { COLORS, FONTS } from "../../theme";
+import { COLORS, FONTS } from '../../theme';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-  allControls: {
-    width: "100%",
-    flexDirection: "column",
-    marginBottom: 10,
-  },
   gameControls: {
+    paddingTop: 20,
     flexDirection: 'row',
     alignItems: "center",
     justifyContent: 'space-evenly',
@@ -22,8 +14,9 @@ export const styles = StyleSheet.create({
   icon: {
     color: COLORS.WHITE,
   },
-  item: {
+  btnControl: {
     alignItems: "center",
     margin: 10,
   },
+
 });

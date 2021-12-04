@@ -1,29 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AppLoading from "expo-app-loading";
-import { TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { ControlNumber } from "../../components/ControlNumber";
 import { useGame } from "../../hooks/game";
-import { styles } from "./styles";
 import { Sudoku } from "../../components/Sudoku";
-import { PlayValue } from "../../utils/types";
+import { ButtonControl, Play, PlayValue } from "../../utils/types";
 import { NumberProps } from "../../components/NumberInput";
-import { useNavigation } from "@react-navigation/core";
-import { validite } from "../../utils";
+import { RouteProp, useNavigation } from "@react-navigation/core";
+import { game2Play, validite } from "../../utils";
 
-export function PlayGame() {
-  const {
-    inPlay,
-    isOptions,
-    setIsOptions,
-    restartGame,
-    saveUndonePlay,
-    saveFinishedPlay,
-    handleCellPlayClick,
-    isSelected,
-  } = useGame();
+export interface PlayGameProps {
+  route: RouteProp<{ params: { play: Play } }, "params">;
+}
 
+const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
+  const { savePlayedLevel } = useGame();
   const { goBack } = useNavigation();
+
+  const [inPlay, setInPlay] = useState<Play>(route.params.play);
+  const [isOptions, setIsOptions] = useState(false);
+
   const questionIcon: React.ComponentProps<typeof AntDesign>["name"] = isOptions
     ? "questioncircle"
     : "questioncircleo";
@@ -33,7 +28,7 @@ export function PlayGame() {
   }
 
   function handleGoBack() {
-    saveUndonePlay();
+    savePlayedLevel(inPlay);
     goBack();
   }
 
@@ -41,54 +36,61 @@ export function PlayGame() {
     if (!inPlay) {
       return;
     }
-    if (inPlay.values.every(v => Boolean(v.value))) {
+    if (inPlay.values.every((v) => Boolean(v.value))) {
       if (!validite(inPlay.values, inPlay.game.levelOption.numbers)) {
         throw "Alguma coisa errada não está certa!";
       }
       alert("Parabéns!!!");
-      saveFinishedPlay();
+      savePlayedLevel(null);
       goBack();
     }
-  }, [inPlay])
+  }, [inPlay]);
+
+  function restartGame() {
+    setInPlay(game2Play(inPlay.game));
+  }
+
+  function handleCellPlayClick(
+    flatItemIndex: number,
+    markValue: (value: PlayValue) => void,
+    markPossible: (value: PlayValue) => void
+  ): void {
+    const values = [...inPlay.values];
+    const selectedValue = values[flatItemIndex];
+    if (!isOptions) {
+      markValue(selectedValue);
+    } else {
+      markPossible(selectedValue);
+    }
+
+    setInPlay({ game: inPlay.game, values });
+  }
+
+  const ctrls: ButtonControl[] = [
+    { antName: "leftcircleo", action: handleGoBack },
+    { antName: "reload1", action: restartGame },
+    { antName: questionIcon, action: () => setIsOptions(!isOptions) },
+  ];
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.btnBack} onPress={() => handleGoBack()}>
-        <AntDesign name="leftcircleo" size={28} style={styles.icon} />
-      </TouchableOpacity>
-      <Sudoku
-        numbers={inPlay.game.levelOption.numbers}
-        flatValues={inPlay.values}
-        handleCellClick={handleCellPlayClick}
-        numberPropPlay={(item: PlayValue) => {
-          const prop: NumberProps = {
-            col: item.col,
-            row: item.row,
-            value: item.value,
-            possibles: item.possibles,
-            readonly: item.readonly,
-            selected: isSelected(item),
-            valid: item.valid,
-          };
-          return prop;
-        }}
-      />
-      <View style={styles.allControls}>
-        <ControlNumber />
-
-        <View style={styles.gameControls}>
-          <TouchableOpacity style={styles.item} onPress={() => restartGame()}>
-            <AntDesign name="reload1" size={24} style={styles.icon} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => setIsOptions(!isOptions)}
-          >
-            <AntDesign name={questionIcon} size={24} style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+    <Sudoku
+      controls={ctrls}
+      numbers={inPlay.game.levelOption.numbers}
+      flatValues={inPlay.values}
+      handleFlatItemClick={handleCellPlayClick}
+      numberPropPlay={(item: PlayValue) => {
+        const prop: NumberProps = {
+          col: item.col,
+          row: item.row,
+          value: item.value,
+          possibles: item.possibles,
+          readonly: item.readonly,
+          valid: item.valid,
+        };
+        return prop;
+      }}
+    />
   );
-}
+};
+
+export default PlayGame;
