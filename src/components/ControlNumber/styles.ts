@@ -4,12 +4,14 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   item: {
+    flex: 1,
+    minWidth: 54,
     alignItems: "center",
-    flexGrow: 1,
-    flexBasis: 0,
-    margin: 3,
+    margin: 7,
   },
   selected: {
     color: COLORS.WHITE,
@@ -19,7 +21,7 @@ export const styles = StyleSheet.create({
     color: COLORS.GRAY_PRIMARY,
   },
   text: {
-    fontSize: 28,
+    fontSize: 34,
     fontFamily: FONTS.REGULAR,
     padding: 10,
   },

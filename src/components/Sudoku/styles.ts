@@ -1,5 +1,11 @@
 import { COLORS, FONTS } from '../../theme';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
+
+const { width } = Dimensions.get("window");
+const gridWidth = Math.floor(width * 96/100);
+const itemDim = Math.floor(gridWidth / 9) - 4;
+
+console.log('styles log', gridWidth, itemDim);
 
 export const styles = StyleSheet.create({
   container: {
@@ -8,16 +14,20 @@ export const styles = StyleSheet.create({
     alignItems:'flex-start'
   },
   gridContainer: {
-    justifyContent: 'center',
     backgroundColor: COLORS.GREEN,
-    width: "96%",
+    maxWidth: gridWidth,
+    maxHeight: gridWidth,
     marginLeft: 8,
     marginTop: 40,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
   item: {
-    alignItems: "center",
-    flexGrow: 1,
-    flexBasis: 0,
+    height: itemDim,
+    width: itemDim,
+    alignContent: "center",
     margin: 2,
   },
   grid: {

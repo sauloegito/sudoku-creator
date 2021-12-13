@@ -13,7 +13,7 @@ export function ControlButtons({ buttons }: ControlButtonsProps) {
     <View style={styles.gameControls}>
       {buttons.map((b) => (
         <TouchableOpacity style={styles.btnControl} onPress={b.action} key={b.antName}>
-          <AntDesign name={b.antName} size={28} style={styles.icon} />
+          <AntDesign name={b.antName} size={34} style={styles.icon} />
         </TouchableOpacity>
       ))}
     </View>

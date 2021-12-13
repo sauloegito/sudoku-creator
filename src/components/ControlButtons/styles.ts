@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   btnControl: {
     alignItems: "center",
-    margin: 10,
+    padding: 20,
   },
 
 });

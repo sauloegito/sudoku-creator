@@ -43,7 +43,7 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
   ): Promise<void> {
     return new Promise<void>((resolve, _reject) => {
       markValue(values[flatItemIndex]);
-      setValues(values);
+      //setValues(values);
       resolve();
     });
   }

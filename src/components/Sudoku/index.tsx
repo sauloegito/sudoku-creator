@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import {
   ButtonControl,
   GameValue,
@@ -14,7 +14,7 @@ import { cell2Flat, sameCell, hasImpact } from "../../utils";
 
 export interface SudokuProps {
   numbers: number[];
-  flatValues: GameValue[] | PlayValue[];
+  flatValues: Array<GameValue | PlayValue>;
   controls: ButtonControl[];
   handleFlatItemClick: (
     flatItemIndex: number,
@@ -28,10 +28,9 @@ export interface SudokuProps {
 
 export function Sudoku(props: SudokuProps) {
   const size = props.numbers.length;
-  const groups = (size / 3);
+  const groups = size / 3;
   const [selectedNumber, setSelectedNumber] = useState(0);
   const [selectedCell, setSelectedCell] = useState<Position | null>(null);
-  const itemHeight = 32;
 
   function isEndLine(col: number): boolean {
     return (col + 1) % groups === 0;
@@ -75,7 +74,7 @@ export function Sudoku(props: SudokuProps) {
 
   function markValue(selectedItem: GameValue) {
     if (selectedNumber === selectedItem.value) {
-      delete selectedItem.value;
+      selectedItem.value = undefined;
     } else {
       selectedItem.value = selectedNumber;
     }
@@ -95,7 +94,6 @@ export function Sudoku(props: SudokuProps) {
   function internalCellClick(item: GameValue | PlayValue): Promise<void> {
     return new Promise((resolve, _reject) => {
       if (item.readonly) {
-        // setSelectedCell(null);
         resolve();
         return;
       }
@@ -117,46 +115,37 @@ export function Sudoku(props: SudokuProps) {
     });
   }
 
+  function genKey(item: GameValue | PlayValue): string {
+    let possibles = "";
+    if ("possibles" in item) {
+      possibles = JSON.stringify(item.possibles);
+    }
+    return `cell-${item.col}${item.row}-${item.value}-${possibles}`;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.gridContainer}>
-        <FlatList
-          data={props.flatValues}
-          numColumns={props.numbers.length}
-          listKey="sudoku-grid"
-          maxToRenderPerBatch={81}
-          updateCellsBatchingPeriod={120}
-          keyExtractor={(item) => `cell-${item.col}${item.row}`}
-          getItemLayout={(_data, index) => ({
-            length: itemHeight,
-            offset: itemHeight * index,
-            index,
-          })}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <View
-                style={[
-                  styles.grid,
-                  isEndLine(item.col) && styles.endLine,
-                  isEndNone(item.col) && styles.endNone,
-                  isBottomLine(item.row) && styles.bottomLine,
-                  isBottomNone(item.row) && styles.bottomNone,
-                  isImpacted(item) && styles.impactedCell,
-                  isSelected(item) && styles.selectedCell,
-                ]}
-              >
-                <TouchableOpacity
-                  onPress={() => internalCellClick(item)}
-                >
-                  <NumberInput
-                    data={numberProps(item)}
-                    numbers={props.numbers}
-                  />
-                </TouchableOpacity>
-              </View>
+        {props.flatValues.map((item) => (
+          <View style={styles.item} key={genKey(item)}>
+            <View
+              style={[
+                styles.grid,
+                isEndLine(item.col) && styles.endLine,
+                isEndNone(item.col) && styles.endNone,
+                isBottomLine(item.row) && styles.bottomLine,
+                isBottomNone(item.row) && styles.bottomNone,
+                isImpacted(item) && styles.impactedCell,
+                isSelected(item) && styles.selectedCell,
+              ]}
+            >
+              <TouchableOpacity onPress={() => internalCellClick(item)}>
+                <NumberInput data={numberProps(item)} numbers={props.numbers} />
+              </TouchableOpacity>
             </View>
-          )}
-        />
+          </View>
+        ))}
+
       </View>
       <View style={styles.allControls}>
         <ControlNumber
