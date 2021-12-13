@@ -19,6 +19,8 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
   const [values, setValues] = useState<PlayValue[]>([...inPlay.values]);
   const [isOptions, setIsOptions] = useState(false);
 
+  const [invalidate, setInvalidate] = useState(false);
+
   const questionIcon: React.ComponentProps<typeof AntDesign>["name"] = isOptions
     ? "questioncircle"
     : "questioncircleo";
@@ -44,15 +46,17 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
         alert("Parabéns!!!");
         savePlayedLevel(null);
         goBack();
-      // } else {
-      //   setValues(values);
+      } else if (!invalidate) {
+        setInvalidate(true);
+        setValues([...values]);
       }
     }
   }, [inPlay, values]);
 
   function restartGame() {
-    setValues([...inPlay.values]);
-    // setInPlay(game2Play(inPlay.game));
+    // setValues([...inPlay.values]);
+    setInvalidate(false);
+    setValues(game2Play(inPlay.game).values);
   }
 
   async function handleCellPlayClick(
@@ -71,8 +75,9 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
         }
         markPossible(selectedValue);
       }
-  
-      setValues(values);
+
+      setInvalidate(false);
+      setValues([...values]);
       resolve();
     });
   }

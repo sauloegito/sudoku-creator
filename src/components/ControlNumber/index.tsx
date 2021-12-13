@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 
 interface ControlNumberProps {
@@ -17,7 +17,7 @@ export function ControlNumber(props: ControlNumberProps) {
       {props.numbers.map((item) => (
         <TouchableOpacity key={`num-${item}`}
           style={styles.item}
-          onPress={() => props.onChange(selectedItem(item) ? 0 : item)}
+          onPressIn={() => props.onChange(selectedItem(item) ? 0 : item)}
         >
           <Text
             style={[

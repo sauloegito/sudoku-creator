@@ -26,7 +26,7 @@ export interface SudokuProps {
   numberPropPlay?: (item: PlayValue) => NumberProps;
 }
 
-export function Sudoku(props: SudokuProps) {
+export const Sudoku: React.FC<SudokuProps> = (props) => {
   const size = props.numbers.length;
   const groups = size / 3;
   const [selectedNumber, setSelectedNumber] = useState(0);
@@ -74,7 +74,7 @@ export function Sudoku(props: SudokuProps) {
 
   function markValue(selectedItem: GameValue) {
     if (selectedNumber === selectedItem.value) {
-      selectedItem.value = undefined;
+      delete selectedItem.value;
     } else {
       selectedItem.value = selectedNumber;
     }
@@ -139,7 +139,7 @@ export function Sudoku(props: SudokuProps) {
                 isSelected(item) && styles.selectedCell,
               ]}
             >
-              <TouchableOpacity onPress={() => internalCellClick(item)}>
+              <TouchableOpacity onPressIn={() => internalCellClick(item)}>
                 <NumberInput data={numberProps(item)} numbers={props.numbers} />
               </TouchableOpacity>
             </View>

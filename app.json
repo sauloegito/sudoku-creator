@@ -23,10 +23,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000"
-      }
+      },
+      "package": "com.segito.react.sudoku"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Create your own Sudoku Games, play and share",
+    "githubUrl": "https://github.com/sauloegito/sudoku-creator"
   }
 }

@@ -191,7 +191,7 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
       //   console.log("analise validateCol", cell2Log(cell), numbers2Log(validNumbers));
       // }
       if (!validateCell(cell, validNumbers)) {
-        console.log("validateCol", cell2Log(cell), numbers2Log(validNumbers));
+        // console.log("validateCol", cell2Log(cell), numbers2Log(validNumbers));
         validCol = false;
       }
     }
@@ -209,7 +209,7 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
       //   console.log("analise validateRow", cell2Log(cell), numbers2Log(validNumbers));
       // }
       if (!validateCell(cell, validNumbers)) {
-        console.log("validateRow", cell2Log(cell), numbers2Log(validNumbers));
+        // console.log("validateRow", cell2Log(cell), numbers2Log(validNumbers));
         validRow = false;
       }
     }
@@ -232,12 +232,12 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
       //   console.log("analise validateArea", area, cell2Log(cell), numbers2Log(validNumbers));
       // }
       if (!validateCell(cell, validNumbers)) {
-        console.log(
-          "validateArea",
-          area,
-          cell2Log(cell),
-          numbers2Log(validNumbers)
-        );
+        // console.log(
+        //   "validateArea",
+        //   area,
+        //   cell2Log(cell),
+        //   numbers2Log(validNumbers)
+        // );
         validArea = false;
       }
     }
@@ -251,15 +251,15 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
   let validGame = true;
   for (let index = 0; index < size; index++) {
     if (!validateCol(index)) {
-      console.log("validateCol fails", index, "\n");
+      // console.log("validateCol fails", index, "\n");
       validGame = false;
     }
     if (!validateRow(index)) {
-      console.log("validateRow fails", index, "\n");
+      // console.log("validateRow fails", index, "\n");
       validGame = false;
     }
     if (!validateArea(index)) {
-      console.log("validateArea fails", index, "\n");
+      // console.log("validateArea fails", index, "\n");
       validGame = false;
     }
   }

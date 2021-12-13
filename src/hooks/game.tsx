@@ -75,12 +75,12 @@ function GameProvider({ children }: ContextProviderProps) {
           console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
         } else if (result && result !== "[]") {
           const games: SavedGames = JSON.parse(result);
-          console.log(
-            "*** getItem",
-            GAMES_STORAGE,
-            "sucesso",
-            stringifyGames(games)
-          );
+          // console.log(
+          //   "*** getItem",
+          //   GAMES_STORAGE,
+          //   "sucesso",
+          //   stringifyGames(games)
+          // );
           setGames(games);
         }
       });
@@ -92,12 +92,12 @@ function GameProvider({ children }: ContextProviderProps) {
           console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
         } else if (result) {
           const plays: SavedPlays = JSON.parse(result);
-          console.log(
-            "*** getItem",
-            GAMES_STORAGE,
-            "sucesso",
-            stringifyPlays(plays)
-          );
+          // console.log(
+          //   "*** getItem",
+          //   GAMES_STORAGE,
+          //   "sucesso",
+          //   stringifyPlays(plays)
+          // );
           setPlays(plays);
         }
       });
@@ -109,13 +109,17 @@ function GameProvider({ children }: ContextProviderProps) {
 
   async function saveStoragePlays(plays: SavedPlays) {
     await AsyncStorage.setItem(PLAYS_STORAGE, JSON.stringify(plays), (fail) => {
-      console.log("setItem", PLAYS_STORAGE, fail);
+      if (fail) {
+        console.log("setItem", PLAYS_STORAGE, fail);
+      }
     });
   }
 
   async function saveStorageGames(games: SavedGames) {
     await AsyncStorage.setItem(GAMES_STORAGE, JSON.stringify(games), (fail) => {
-      console.log("setItem", GAMES_STORAGE, fail);
+      if (fail) {
+        console.log("setItem", GAMES_STORAGE, fail);
+      }
     });
   }
 
@@ -141,15 +145,14 @@ function GameProvider({ children }: ContextProviderProps) {
     stringifySudoku(newGame.initialValues, size);
 
     if (!validite(newGame.initialValues, newGame.levelOption.numbers)) {
-      throw "Alguma coisa errada não está certa!";
+      alert("Existem inconsistências nesta definição de jogo!");
+      return;
     }
 
     const tempGames = { ...games };
-    const len = tempGames[level].push(newGame);
-    console.log("saved at", len);
+    tempGames[level].push(newGame);
 
     refreshGameList(tempGames);
-    console.log("refreshed game");
   }
 
   return (

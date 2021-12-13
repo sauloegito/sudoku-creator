@@ -5,8 +5,6 @@ const { width } = Dimensions.get("window");
 const gridWidth = Math.floor(width * 96/100);
 const itemDim = Math.floor(gridWidth / 9) - 4;
 
-console.log('styles log', gridWidth, itemDim);
-
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
