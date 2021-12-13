@@ -4,6 +4,8 @@ export const COLORS = {
   PINK: '#FF008E',
   ORANGE: '#FF7A29',
   YELLOW: '#FFCD1E',
+  SELECTED: 'rgba(255, 205, 30, 0.7)',
+  IMPACTED: 'rgba(255, 205, 30, 0.3)',
 
   BLACK_PRIMARY: '#09090A',
   BLACK_SECONDARY: '#121214',

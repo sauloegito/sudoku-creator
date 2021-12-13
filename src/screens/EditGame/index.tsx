@@ -42,7 +42,6 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
     markValue: (item: GameValue) => void
   ): Promise<void> {
     return new Promise<void>((resolve, _reject) => {
-      console.log('edit click', flatItemIndex);
       markValue(values[flatItemIndex]);
       setValues(values);
       resolve();

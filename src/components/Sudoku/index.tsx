@@ -10,7 +10,7 @@ import { ControlNumber } from "../ControlNumber";
 import { NumberInput, NumberProps } from "../NumberInput";
 import { styles } from "./styles";
 import { ControlButtons } from "../ControlButtons";
-import { cell2Flat, sameCell } from "../../utils";
+import { cell2Flat, sameCell, hasImpact } from "../../utils";
 
 export interface SudokuProps {
   numbers: number[];
@@ -57,14 +57,18 @@ export function Sudoku(props: SudokuProps) {
       throw "Faltou informar montador de propriedes";
     }
 
-    if (isSelected(item)) {
-      numberProp.selected = true;
-    }
     return numberProp;
   }
 
   function isSelected(cell: Position | null): boolean {
     return sameCell(cell, selectedCell);
+  }
+
+  function isImpacted(cell: Position | null): boolean {
+    // if (isSelected(cell)) {
+    //   return false;
+    // }
+    return hasImpact(cell, selectedCell);
   }
 
   function markValue(selectedItem: GameValue) {
@@ -86,14 +90,17 @@ export function Sudoku(props: SudokuProps) {
     }
   }
 
-  async function internalCellClick(item: GameValue | PlayValue): Promise<void> {
+  function internalCellClick(item: GameValue | PlayValue): Promise<void> {
     return new Promise((resolve, _reject) => {
-      if (item.readonly || isSelected(item)) {
-        setSelectedCell(null);
+      if (item.readonly) {
+        // setSelectedCell(null);
         resolve();
         return;
       }
-      setSelectedCell(item);
+
+      if (!isSelected(item)) {
+        setSelectedCell(item);
+      }
 
       if (!selectedNumber || !item) {
         resolve();
@@ -123,18 +130,26 @@ export function Sudoku(props: SudokuProps) {
           })}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <TouchableOpacity
-                onPress={() => internalCellClick(item)}
+              <View
                 style={[
                   styles.grid,
                   isEndLine(item.col) && styles.endLine,
                   isEndNone(item.col) && styles.endNone,
                   isBottomLine(item.row) && styles.bottomLine,
                   isBottomNone(item.row) && styles.bottomNone,
+                  isImpacted(item) && styles.impactedCell,
+                  isSelected(item) && styles.selectedCell,
                 ]}
               >
-                <NumberInput data={numberProps(item)} numbers={props.numbers} />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => internalCellClick(item)}
+                >
+                  <NumberInput
+                    data={numberProps(item)}
+                    numbers={props.numbers}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         />

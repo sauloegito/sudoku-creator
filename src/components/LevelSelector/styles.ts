@@ -2,14 +2,14 @@ import { FONTS, COLORS } from "./../../theme";
 import { Dimensions, StyleSheet } from "react-native";
 
 const { width } = Dimensions.get("window");
-export const itemWidth = width - 20;
+export const itemWidth = width;
 
 export const styles = StyleSheet.create({
   btnFloat: {
     width: 60,
     height: 60,
     position: 'absolute',
-    bottom: 85,
+    top: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },

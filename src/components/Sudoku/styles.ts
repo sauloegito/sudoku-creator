@@ -40,6 +40,12 @@ export const styles = StyleSheet.create({
   bottomNone: {
     borderBottomWidth: 0,
   },
+  selectedCell: {
+    backgroundColor: COLORS.SELECTED,
+  },
+  impactedCell: {
+    backgroundColor: COLORS.IMPACTED,
+  },
   allControls: {
     width: "100%",
     flexDirection: "column",

@@ -36,5 +36,9 @@ export const styles = StyleSheet.create({
   },
   textReadonly: {
     color: COLORS.GRAY_QUATERNARY,
-  }
+  },
+  textInvalid: {
+    color: COLORS.PINK,
+  },
+
 });

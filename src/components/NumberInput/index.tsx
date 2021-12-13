@@ -6,7 +6,6 @@ import { styles } from "./styles";
 export interface NumberProps extends Position {
   value?: number;
   possibles: number[];
-  selected?: boolean;
 }
 
 type Props = {
@@ -22,7 +21,13 @@ export function NumberInput({ data, numbers }: Props) {
   return (
     <View style={styles.container}>
       {showValue() ? (
-        <Text style={[styles.textValue, data.readonly && styles.textReadonly]}>
+        <Text
+          style={[
+            styles.textValue,
+            data.readonly && styles.textReadonly,
+            !data.valid && styles.textInvalid,
+          ]}
+        >
           {data.value}
         </Text>
       ) : (

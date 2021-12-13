@@ -10,17 +10,6 @@ import {
   SavedPlays,
 } from "./types";
 
-export function sameCell(
-  cellA: Position | null,
-  cellB: Position | null
-): boolean {
-  if (cellA && cellB) {
-    return cellA.col === cellB.col && cellA.row === cellB.row;
-  } else {
-    return false;
-  }
-}
-
 export function stringifyGames(saved: SavedGames): string {
   function stringifyGame(games: Game[]): string {
     if (!games.length) {
@@ -92,6 +81,61 @@ export function game2Play(game: Game): Play {
 
 export function cell2Flat(cell: Position): number {
   return cell.col + cell.row * 9;
+}
+
+function checkSame(
+  cellA: Position | null,
+  cellB: Position | null,
+  checkValid: (cellA: Position, cellB: Position) => boolean
+): boolean {
+  if (cellA && cellB) {
+    return checkValid(cellA, cellB);
+  } else {
+    return false;
+  }
+}
+
+function checkRow(cellA: Position, cellB: Position): boolean {
+  return cellA.row === cellB.row;
+}
+
+function checkCol(cellA: Position, cellB: Position): boolean {
+  return cellA.col === cellB.col;
+}
+
+function sameArea(posA: number, posB: number): boolean {
+  const areaA = Math.floor(posA / 3);
+  const areaB = Math.floor(posB / 3);
+  return areaA === areaB;
+}
+
+function checkArea(cellA: Position, cellB: Position): boolean {
+  return sameArea(cellA.col, cellB.col) && sameArea(cellA.row, cellB.row);
+}
+
+export function sameCell(
+  cellA: Position | null,
+  cellB: Position | null
+): boolean {
+  return checkSame(
+    cellA,
+    cellB,
+    (cellA, cellB) => checkRow(cellA, cellB) && checkCol(cellA, cellB)
+  );
+}
+
+export function hasImpact(
+  cellA: Position | null,
+  cellB: Position | null
+): boolean {
+  return checkSame(
+    cellA,
+    cellB,
+    (cellA, cellB) =>
+      checkCol(cellA, cellB) ||
+      checkRow(cellA, cellB) ||
+      checkArea(cellA, cellB)
+  );
 }
 
 export function validite(values: GameValue[], numbers: number[]): boolean {
@@ -200,6 +244,9 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
 
     return validArea;
   }
+
+  // Clear older validations
+  values.forEach(v => v.valid = true);
 
   let validGame = true;
   for (let index = 0; index < size; index++) {

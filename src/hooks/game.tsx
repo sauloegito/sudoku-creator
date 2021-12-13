@@ -20,7 +20,8 @@ const PLAYS_STORAGE = "@sudoku-creator:plays";
 
 interface GameContextData {
   selectedLevel: LevelInfo;
-  setSelectedLevel: (newLevel: LevelInfo) => void;
+  selectedIndexLevel: number;
+  setSelectedIndexLevel: (newIndex: number) => void;
 
   games: SavedGames;
   saveGameEdition: (newGame: Game) => void;
@@ -40,6 +41,14 @@ function GameProvider({ children }: ContextProviderProps) {
   const [selectedLevel, setSelectedLevel] = useState(
     LevelOptions[_initialLevelIndex]
   );
+
+  function getSelectedIndexLevel(): number {
+    return LevelOptions.indexOf(selectedLevel);
+  }
+
+  function setSelectedIndexLevel(newIndex: number): void {
+    setSelectedLevel(LevelOptions[newIndex]);
+  }
 
   // const [selectedType, _setSelectedType] = useState<GameType>("DEFAULT");
 
@@ -65,7 +74,6 @@ function GameProvider({ children }: ContextProviderProps) {
         if (fail) {
           console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
         } else if (result && result !== "[]") {
-          console.log('storaged games', result);
           const games: SavedGames = JSON.parse(result);
           console.log(
             "*** getItem",
@@ -83,7 +91,6 @@ function GameProvider({ children }: ContextProviderProps) {
         if (fail) {
           console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
         } else if (result) {
-          console.log('storaged plays', result);
           const plays: SavedPlays = JSON.parse(result);
           console.log(
             "*** getItem",
@@ -100,13 +107,13 @@ function GameProvider({ children }: ContextProviderProps) {
     loadStorageGames();
   }, []);
 
-  async function saveStoragePlays() {
+  async function saveStoragePlays(plays: SavedPlays) {
     await AsyncStorage.setItem(PLAYS_STORAGE, JSON.stringify(plays), (fail) => {
       console.log("setItem", PLAYS_STORAGE, fail);
     });
   }
 
-  async function saveStorageGames() {
+  async function saveStorageGames(games: SavedGames) {
     await AsyncStorage.setItem(GAMES_STORAGE, JSON.stringify(games), (fail) => {
       console.log("setItem", GAMES_STORAGE, fail);
     });
@@ -114,7 +121,7 @@ function GameProvider({ children }: ContextProviderProps) {
 
   function refreshPlaysList(plays: SavedPlays) {
     setPlays(plays);
-    saveStoragePlays();
+    saveStoragePlays(plays);
   }
 
   function savePlayedLevel(play: Play | null) {
@@ -125,7 +132,7 @@ function GameProvider({ children }: ContextProviderProps) {
 
   function refreshGameList(games: SavedGames) {
     setGames(games);
-    saveStorageGames();
+    saveStorageGames(games);
   }
 
   function saveGameEdition(newGame: Game) {
@@ -149,7 +156,8 @@ function GameProvider({ children }: ContextProviderProps) {
     <GameContext.Provider
       value={{
         selectedLevel,
-        setSelectedLevel,
+        selectedIndexLevel: getSelectedIndexLevel(),
+        setSelectedIndexLevel,
 
         games,
         saveGameEdition,

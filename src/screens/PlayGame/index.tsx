@@ -16,7 +16,7 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
   const { savePlayedLevel } = useGame();
   const { goBack } = useNavigation();
   const inPlay = route.params.play;
-  const [values, setValues] = useState<PlayValue[]>(inPlay.values);
+  const [values, setValues] = useState<PlayValue[]>([...inPlay.values]);
   const [isOptions, setIsOptions] = useState(false);
 
   const questionIcon: React.ComponentProps<typeof AntDesign>["name"] = isOptions
@@ -28,7 +28,10 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
   }
 
   function handleGoBack() {
-    savePlayedLevel(inPlay);
+    savePlayedLevel({
+      game: inPlay.game,
+      values
+    });
     goBack();
   }
 
@@ -37,17 +40,18 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
       return;
     }
     if (values.every((v) => Boolean(v.value))) {
-      if (!validite(values, inPlay.game.levelOption.numbers)) {
-        throw "Alguma coisa errada não está certa!";
+      if (validite(values, inPlay.game.levelOption.numbers)) {
+        alert("Parabéns!!!");
+        savePlayedLevel(null);
+        goBack();
+      // } else {
+      //   setValues(values);
       }
-      alert("Parabéns!!!");
-      savePlayedLevel(null);
-      goBack();
     }
   }, [inPlay, values]);
 
   function restartGame() {
-    setValues(inPlay.values);
+    setValues([...inPlay.values]);
     // setInPlay(game2Play(inPlay.game));
   }
 
@@ -59,6 +63,7 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
     return new Promise<void>((resolve, reject) => {
       const selectedValue = values[flatItemIndex];
       if (!isOptions) {
+        selectedValue.valid = true;
         markValue(selectedValue);
       } else {
         if (selectedValue.value) {
