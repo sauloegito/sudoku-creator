@@ -27,24 +27,26 @@ export interface SudokuProps {
 }
 
 export function Sudoku(props: SudokuProps) {
+  const size = props.numbers.length;
+  const groups = (size / 3);
   const [selectedNumber, setSelectedNumber] = useState(0);
   const [selectedCell, setSelectedCell] = useState<Position | null>(null);
   const itemHeight = 32;
 
   function isEndLine(col: number): boolean {
-    return (col + 1) % 3 === 0;
+    return (col + 1) % groups === 0;
   }
 
   function isBottomLine(row: number): boolean {
-    return (row + 1) % 3 === 0;
+    return (row + 1) % groups === 0;
   }
 
   function isEndNone(col: number): boolean {
-    return col + 1 === props.numbers.length;
+    return col + 1 === size;
   }
 
   function isBottomNone(row: number): boolean {
-    return row + 1 === props.numbers.length;
+    return row + 1 === size;
   }
 
   function numberProps(item: any): NumberProps {
@@ -122,6 +124,8 @@ export function Sudoku(props: SudokuProps) {
           data={props.flatValues}
           numColumns={props.numbers.length}
           listKey="sudoku-grid"
+          maxToRenderPerBatch={81}
+          updateCellsBatchingPeriod={120}
           keyExtractor={(item) => `cell-${item.col}${item.row}`}
           getItemLayout={(_data, index) => ({
             length: itemHeight,
