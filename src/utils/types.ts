@@ -13,15 +13,15 @@ export type LevelInfo = {
   numbers: number[];
   count?: number;
   hasSaved?: boolean;
-};
+}
 
 export type SavedPlays = {
   [level in GameLevel]: Play | null;
-};
+}
 
 export type SavedGames = {
   [level in GameLevel]: Game[];
-};
+}
 
 export interface Position {
   col: number;
@@ -38,17 +38,16 @@ export type Game = {
   type: GameType;
   levelOption: LevelInfo;
   initialValues: GameValue[];
-};
+}
 
 export interface PlayValue extends GameValue {
-  readonly: boolean;
   possibles: number[];
 }
 
 export type Play = {
   game: Game;
   values: PlayValue[];
-};
+}
 
 export type ButtonControl = {
   antName: React.ComponentProps<typeof AntDesign>['name'];
@@ -67,4 +66,4 @@ export const LevelOptions: LevelInfo[] = [
   { id: "REGULAR", label: "Clássico", numbers: NineNumbers },
   { id: "HARD", label: "Difícil", numbers: NineNumbers },
   { id: "EXTREME", label: "Muito Difícil", numbers: NineNumbers },
-];
+]

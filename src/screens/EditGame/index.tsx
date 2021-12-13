@@ -14,7 +14,8 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
   const { saveGameEdition } = useGame();
   const navigation = useNavigation();
 
-  const [inGame, setInGame] = useState<Game>(route.params.game);
+  const inGame = route.params.game;
+  const [values, setValues] = useState<GameValue[]>(inGame.initialValues);
 
   function handleDiscard() {
     navigation.goBack();
@@ -22,7 +23,11 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
 
   function handleSave() {
     try {
-      saveGameEdition(inGame);
+      saveGameEdition({
+        type: inGame.type,
+        levelOption: inGame.levelOption,
+        initialValues: values,
+      });
     } finally {
       navigation.goBack();
     }
@@ -32,16 +37,15 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
     return <AppLoading />;
   }
 
-  function handleCellEditClick(
+  async function handleCellEditClick(
     flatItemIndex: number,
-    markValue: (value: GameValue) => void
-  ): void {
-    const values = [...inGame.initialValues];
-    markValue(values[flatItemIndex]);
-    setInGame({
-      type: inGame.type,
-      levelOption: inGame.levelOption,
-      initialValues: values,
+    markValue: (item: GameValue) => void
+  ): Promise<void> {
+    return new Promise<void>((resolve, _reject) => {
+      console.log('edit click', flatItemIndex);
+      markValue(values[flatItemIndex]);
+      setValues(values);
+      resolve();
     });
   }
 
@@ -54,7 +58,7 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
     <Sudoku
       controls={ctrls}
       numbers={inGame.levelOption.numbers}
-      flatValues={inGame.initialValues}
+      flatValues={values}
       handleFlatItemClick={handleCellEditClick}
       numberPropGame={(item: GameValue) => {
         const prop: NumberProps = {
@@ -69,7 +73,6 @@ const EditGame: React.FC<EditGameProps> = ({ route }) => {
       }}
     />
   );
-}
-
+};
 
 export default EditGame;

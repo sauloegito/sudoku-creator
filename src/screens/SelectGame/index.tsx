@@ -1,42 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/core";
-import {
-  Game,
-  GameLevel,
-  GameValue,
-  LevelOptions,
-  MACHINE_STATE_FAIL,
-  Play,
-} from "../../utils/types";
+import LevelSelector from "../../components/LevelSelector";
 import { useGame } from "../../hooks/game";
-import { styles } from "./styles";
+import { Game, GameValue, MACHINE_STATE_FAIL, Play } from "../../utils/types";
 import { game2Play } from "../../utils";
-import { Picker } from "react-native";
+import { styles } from "./styles";
 
 const SelectGame: React.FC = () => {
-  const {
-    selectedLevel,
-    setSelectedLevel,
-    games,
-    plays,
-  } = useGame();
-
+  const { selectedLevel, games, plays } = useGame();
   const { navigate } = useNavigation();
-  const [levelID, setLevelID] = useState<GameLevel>("REGULAR");
-
-  function handleSelectLevel(item: GameLevel, index: number) {
-    setLevelID(item);
-    setSelectedLevel(LevelOptions[index]);
-  }
 
   function handlePlayGame(saved: boolean) {
     function loadLastGame(): Play {
-      const saved = plays[selectedLevel.id];
-      if (!saved) {
+      const savedGame = plays[selectedLevel.id];
+      if (!savedGame) {
         throw MACHINE_STATE_FAIL;
       }
-      return saved;
+      return { ...savedGame };
     }
 
     function playNewGame(): Play {
@@ -50,7 +31,7 @@ const SelectGame: React.FC = () => {
       return game2Play(selectedGame);
     }
 
-    navigate("Play", {play: (saved) ? loadLastGame() : playNewGame()});
+    navigate("Play", { play: saved ? loadLastGame() : playNewGame() });
   }
 
   function handleEditGame() {
@@ -72,26 +53,17 @@ const SelectGame: React.FC = () => {
       };
     }
 
-    navigate("Edit", {game: editNewGame()});
+    navigate("Edit", { game: editNewGame() });
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.selection}>
-        <Text style={styles.labelPicker}>Nível de Jogo:</Text>
-        <Picker
-          onValueChange={handleSelectLevel}
-          selectedValue={levelID}
-          style={styles.picker}
-        >
-          {LevelOptions.map((level) => (
-            <Picker.Item label={level.label} value={level.id} key={level.id} />
-          ))}
-        </Picker>
-      </View>
+      <LevelSelector />
+
       <TouchableOpacity onPress={handleEditGame} style={styles.item}>
         <Text style={styles.text}>Criar</Text>
       </TouchableOpacity>
+
       {Boolean(games[selectedLevel.id].length) && (
         <TouchableOpacity
           onPress={() => handlePlayGame(false)}
@@ -100,6 +72,7 @@ const SelectGame: React.FC = () => {
           <Text style={styles.text}>Novo Jogo</Text>
         </TouchableOpacity>
       )}
+
       {Boolean(plays[selectedLevel.id]) && (
         <TouchableOpacity
           onPress={() => handlePlayGame(true)}
@@ -110,6 +83,6 @@ const SelectGame: React.FC = () => {
       )}
     </View>
   );
-}
+};
 
 export default SelectGame;

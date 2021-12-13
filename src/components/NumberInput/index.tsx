@@ -30,7 +30,7 @@ export function NumberInput({ data, numbers }: Props) {
           <FlatList
             data={numbers}
             numColumns={3}
-            listKey="possibles"
+            listKey={`possibles-${data.col}${data.row}`}
             keyExtractor={(item) => `possib-${data.col}${data.row}-${item}`}
             renderItem={({ item }) => (
               <View style={styles.itemPossible}>

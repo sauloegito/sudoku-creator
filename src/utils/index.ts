@@ -180,9 +180,9 @@ export function validite(values: GameValue[], numbers: number[]): boolean {
     const adjustRow = 3 * (area % 3);
 
     let validArea = true;
-    for (let count = 0; count < size; count++) {
-      const col = adjustCol + Math.floor(count / 3);
-      const row = adjustRow + (count % 3);
+    for (let counter = 0; counter < size; counter++) {
+      const col = adjustCol + Math.floor(counter / 3);
+      const row = adjustRow + (counter % 3);
       const cell: Position = { col, row, readonly: false, valid: true };
       // if (showLog['area'].indexOf(area) !== -1) {
       //   console.log("analise validateArea", area, cell2Log(cell), numbers2Log(validNumbers));

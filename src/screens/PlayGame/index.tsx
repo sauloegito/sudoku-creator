@@ -15,8 +15,8 @@ export interface PlayGameProps {
 const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
   const { savePlayedLevel } = useGame();
   const { goBack } = useNavigation();
-
-  const [inPlay, setInPlay] = useState<Play>(route.params.play);
+  const inPlay = route.params.play;
+  const [values, setValues] = useState<PlayValue[]>(inPlay.values);
   const [isOptions, setIsOptions] = useState(false);
 
   const questionIcon: React.ComponentProps<typeof AntDesign>["name"] = isOptions
@@ -33,37 +33,43 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
   }
 
   useEffect(() => {
-    if (!inPlay) {
+    if (!inPlay || !values) {
       return;
     }
-    if (inPlay.values.every((v) => Boolean(v.value))) {
-      if (!validite(inPlay.values, inPlay.game.levelOption.numbers)) {
+    if (values.every((v) => Boolean(v.value))) {
+      if (!validite(values, inPlay.game.levelOption.numbers)) {
         throw "Alguma coisa errada não está certa!";
       }
       alert("Parabéns!!!");
       savePlayedLevel(null);
       goBack();
     }
-  }, [inPlay]);
+  }, [inPlay, values]);
 
   function restartGame() {
-    setInPlay(game2Play(inPlay.game));
+    setValues(inPlay.values);
+    // setInPlay(game2Play(inPlay.game));
   }
 
-  function handleCellPlayClick(
+  async function handleCellPlayClick(
     flatItemIndex: number,
     markValue: (value: PlayValue) => void,
     markPossible: (value: PlayValue) => void
-  ): void {
-    const values = [...inPlay.values];
-    const selectedValue = values[flatItemIndex];
-    if (!isOptions) {
-      markValue(selectedValue);
-    } else {
-      markPossible(selectedValue);
-    }
-
-    setInPlay({ game: inPlay.game, values });
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const selectedValue = values[flatItemIndex];
+      if (!isOptions) {
+        markValue(selectedValue);
+      } else {
+        if (selectedValue.value) {
+          reject();
+        }
+        markPossible(selectedValue);
+      }
+  
+      setValues(values);
+      resolve();
+    });
   }
 
   const ctrls: ButtonControl[] = [
@@ -76,7 +82,7 @@ const PlayGame: React.FC<PlayGameProps> = ({ route }) => {
     <Sudoku
       controls={ctrls}
       numbers={inPlay.game.levelOption.numbers}
-      flatValues={inPlay.values}
+      flatValues={values}
       handleFlatItemClick={handleCellPlayClick}
       numberPropPlay={(item: PlayValue) => {
         const prop: NumberProps = {

@@ -20,7 +20,7 @@ export interface SudokuProps {
     flatItemIndex: number,
     markValue: (value: GameValue) => void,
     markPossible: (value: PlayValue) => void
-  ) => void;
+  ) => Promise<void>;
 
   numberPropGame?: (item: GameValue) => NumberProps;
   numberPropPlay?: (item: PlayValue) => NumberProps;
@@ -29,6 +29,7 @@ export interface SudokuProps {
 export function Sudoku(props: SudokuProps) {
   const [selectedNumber, setSelectedNumber] = useState(0);
   const [selectedCell, setSelectedCell] = useState<Position | null>(null);
+  const itemHeight = 32;
 
   function isEndLine(col: number): boolean {
     return (col + 1) % 3 === 0;
@@ -50,7 +51,7 @@ export function Sudoku(props: SudokuProps) {
     let numberProp: NumberProps;
     if (props.numberPropGame) {
       numberProp = props.numberPropGame(item);
-    } if (props.numberPropPlay) {
+    } else if (props.numberPropPlay) {
       numberProp = props.numberPropPlay(item);
     } else {
       throw "Faltou informar montador de propriedes";
@@ -66,37 +67,45 @@ export function Sudoku(props: SudokuProps) {
     return sameCell(cell, selectedCell);
   }
 
-  function markValue(selectedValue: GameValue) {
-    if (selectedNumber === selectedValue.value) {
-      delete selectedValue.value;
+  function markValue(selectedItem: GameValue) {
+    if (selectedNumber === selectedItem.value) {
+      delete selectedItem.value;
     } else {
-      selectedValue.value = selectedNumber;
+      selectedItem.value = selectedNumber;
     }
   }
 
-  function markPossible(selectedValue: PlayValue) {
-    const idx = selectedValue.possibles.indexOf(selectedNumber);
+  function markPossible(selectedItem: PlayValue) {
+    const idx = selectedItem.possibles.indexOf(selectedNumber);
     if (idx == -1) {
-      selectedValue.possibles.push(selectedNumber);
+      selectedItem.possibles.push(selectedNumber);
     } else {
-      selectedValue.possibles = selectedValue.possibles.filter(
-        (p) => p != selectedNumber
+      selectedItem.possibles = selectedItem.possibles.filter(
+        (p: number) => p != selectedNumber
       );
     }
   }
 
-  function internalCellClick(cell: Position | null): void {
-    if (cell?.readonly || isSelected(cell)) {
-      setSelectedCell(null);
-      return;
-    }
-    setSelectedCell(cell);
+  async function internalCellClick(item: GameValue | PlayValue): Promise<void> {
+    return new Promise((resolve, _reject) => {
+      if (item.readonly || isSelected(item)) {
+        setSelectedCell(null);
+        resolve();
+        return;
+      }
+      setSelectedCell(item);
 
-    if (!selectedNumber || !cell) {
-      return;
-    }
+      if (!selectedNumber || !item) {
+        resolve();
+        return;
+      }
 
-    props.handleFlatItemClick(cell2Flat(cell), markValue, markPossible);
+      props
+        .handleFlatItemClick(cell2Flat(item), markValue, markPossible)
+        .finally(() => {
+          resolve();
+        });
+    });
   }
 
   return (
@@ -107,6 +116,11 @@ export function Sudoku(props: SudokuProps) {
           numColumns={props.numbers.length}
           listKey="sudoku-grid"
           keyExtractor={(item) => `cell-${item.col}${item.row}`}
+          getItemLayout={(_data, index) => ({
+            length: itemHeight,
+            offset: itemHeight * index,
+            index,
+          })}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <TouchableOpacity

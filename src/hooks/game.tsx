@@ -35,10 +35,10 @@ interface ContextProviderProps {
 }
 
 function GameProvider({ children }: ContextProviderProps) {
-  let _selectedLevelIndex: number | undefined = 2;
+  const _initialLevelIndex = 2;
 
   const [selectedLevel, setSelectedLevel] = useState(
-    LevelOptions[_selectedLevelIndex]
+    LevelOptions[_initialLevelIndex]
   );
 
   // const [selectedType, _setSelectedType] = useState<GameType>("DEFAULT");
@@ -65,6 +65,7 @@ function GameProvider({ children }: ContextProviderProps) {
         if (fail) {
           console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
         } else if (result && result !== "[]") {
+          console.log('storaged games', result);
           const games: SavedGames = JSON.parse(result);
           console.log(
             "*** getItem",
@@ -82,6 +83,7 @@ function GameProvider({ children }: ContextProviderProps) {
         if (fail) {
           console.log("*** getItem", GAMES_STORAGE, "falha", fail, result);
         } else if (result) {
+          console.log('storaged plays', result);
           const plays: SavedPlays = JSON.parse(result);
           console.log(
             "*** getItem",
